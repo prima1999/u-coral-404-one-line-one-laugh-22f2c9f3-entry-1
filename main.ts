@@ -1,12 +1,24 @@
-// One Line, One Laugh — a make.fun bounty entry.
-// The program writes one original funny line to /output/entry.txt.
-// It is fully deterministic: no clock, no randomness, no network.
 import { mkdirSync, writeFileSync } from "node:fs";
-import { join as joinPath } from "node:path";
+import { join } from "node:path";
 
-const LINE: string =
+const FINAL_LINE =
   "I tried meal-prepping on Sunday and by Wednesday the containers had unionised against me.";
 
-const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
-mkdirSync(outputDir, { recursive: true });
-writeFileSync(joinPath(outputDir, "entry.txt"), LINE, "utf8");
+const DEFAULT_OUTPUT_DIR = "/output";
+
+function pickOutputDir(): string {
+  const fromEnv = process.env.MAKEFUN_OUTPUT_DIR;
+  if (fromEnv !== undefined && fromEnv.length > 0) {
+    return fromEnv;
+  }
+  return DEFAULT_OUTPUT_DIR;
+}
+
+function writeEntry(): void {
+  const outDir = pickOutputDir();
+  mkdirSync(outDir, { recursive: true });
+  const target = join(outDir, "entry.txt");
+  writeFileSync(target, FINAL_LINE + "\n", "utf8");
+}
+
+writeEntry();
